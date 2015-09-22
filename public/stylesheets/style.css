@@ -1,0 +1,19 @@
+body {
+	background: #000;
+	color: #FFF;
+	font-family: 'Roboto', sans-serif; font-weight: 100;
+}
+
+a {
+	color: #00B7FF;
+}
+
+#base {
+	width: 800px;
+	height: 1280px;
+	border: 1px #FFF solid;
+}
+
+#clock {
+	font-size:190px;
+}
