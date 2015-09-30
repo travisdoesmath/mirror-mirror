@@ -7,7 +7,7 @@ var lastWeatherRequestTime;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-	var apiKey = '90cc94d3b92e7963143043d6ff9d99b9',
+	var apiKey = process.env.FORECAST_IO_API_KEY,
 		latitude = 41.934438,
 		longitude = -87.710199;
 	var	url = 'https://api.forecast.io/forecast/' + apiKey + '/' + latitude + ',' + longitude;
