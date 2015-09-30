@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
 
 	if (lastRequestTime == null || (requestTime - lastRequestTime) > 300) {
 		fitbitData = fitbitClient.get('body/weight', userKey, userSecret);
-		})
+		}
 
 		res.send(fitbitData);
 
