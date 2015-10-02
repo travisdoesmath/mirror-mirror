@@ -12,7 +12,7 @@ var apiKey = process.env.FORECAST_IO_API_KEY,
 	longitude = -87.710199;
 var	url = 'https://api.forecast.io/forecast/' + apiKey + '/' + latitude + ',' + longitude;
 
-Data = models('Data');
+Data = models('data');
 
 /* GET weather data from forecast.io */
 router.get('/', function(req, res, next) {

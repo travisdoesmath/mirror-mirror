@@ -7,7 +7,7 @@ var models = require('../models');
 var apiKey = process.env.BUSTRACKER_API_KEY
 var	url = 'http://www.ctabustracker.com/bustime/api/v1/getpredictions?key=' + apiKey + '&stpid=7859,17413';
 
-Data = models('Data');
+Data = models('data');
 
 /* GET bustracker data from ctabustracker.com */
 router.get('/', function(req, res, next) {
@@ -46,7 +46,7 @@ router.get('/', function(req, res, next) {
 });
 
 
-getApiData = function(url, callback) {
+var getApiData = function(url, callback) {
 	var err = null;
     var request = http.get(url, function(response) {
     // data is streamed in chunks from the server
