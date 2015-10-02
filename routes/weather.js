@@ -1,48 +1,79 @@
 var express = require('express');
-var router = express.Router();
-var https = require('https');
+var	mongoose = require('mongoose');
+var	router = express.Router();
+var	https = require('https');
+var models = require('../models');
 
 var weatherData = "";
-var lastWeatherRequestTime;
+var lastRequestTime;
 
-/* GET users listing. */
+var apiKey = process.env.FORECAST_IO_API_KEY,
+	latitude = 41.934438,
+	longitude = -87.710199;
+var	url = 'https://api.forecast.io/forecast/' + apiKey + '/' + latitude + ',' + longitude;
+
+Data = models('Data');
+
+/* GET weather data from forecast.io */
 router.get('/', function(req, res, next) {
-	var apiKey = process.env.FORECAST_IO_API_KEY,
-		latitude = 41.934438,
-		longitude = -87.710199;
-	var	url = 'https://api.forecast.io/forecast/' + apiKey + '/' + latitude + ',' + longitude;
 
-	var requestTime = Math.floor(new Date() / 1000);
 
-	if (lastWeatherRequestTime == null || (requestTime - lastWeatherRequestTime) > 300) {
-		var request = https.get(url, function(response) {
-			// data is streamed in chunks from the server
-			// so we have to handle the "data" event
-			var buffer = "",
-				data,
-				route;
+	Data.findOne({ 'source': 'forecast-io' }, 'data createDate', function (err, data) {
+		if (err) return handleError(err);
+		
+		// If there is no weather data in the database, request and create
+		if (data == null) {	
+			console.log("no data found, creating data");
 
-			var nChunks = 0;
+			getApiData(url, function(err, data) { 
+				if (err) handleError(err);
 
-			response.on("data", function (chunk) {
-				buffer += chunk;
-				nChunks++;
-			});
-
-			response.on("end", function (err) {
-				console.log("number of chunks: " + nChunks)
-				// weatherData = JSON.parse(buffer);
-				weatherData = buffer;
-				lastWeatherRequestTime = JSON.parse(buffer).currently.time;
+				var weatherData = new Data({ source: 'forecast-io', data: data})
+				weatherData.save();
+				res.send(weatherData.data);
 			})
-		})
+		} else {
+			if ((Date.now() - data.createDate) / 1000 > 600) {
+				console.log("weather data older than 10 minutes, refreshing")
+				data.remove({});
+				getApiData(url, function(err, data) { 
+					if (err) handleError(err);
 
-		res.send(weatherData);
+					var weatherData = new Data({ source: 'forecast-io', data: data})
+					weatherData.save();
+					res.send(weatherData.data);
+				})
+			} else {
+				console.log("found weather data, returning found data");
+				res.send(data.data);
+			}
+		}
 
-	} else {
-		res.send(weatherData);
-	}
+	});	
 
 });
+
+var getApiData = function(url, callback) {
+	var err = null;
+    var request = https.get(url, function(response) {
+    // data is streamed in chunks from the server
+    // so we have to handle the "data" event
+    var buffer = "",
+      data,
+      route;
+
+    var nChunks = 0;
+
+    response.on("data", function (chunk) {
+      buffer += chunk;
+      nChunks++;
+    });
+
+    response.on("end", function (err) {
+      console.log("number of chunks: " + nChunks)
+      callback(err, buffer);
+    })
+  })
+}
 
 module.exports = router;

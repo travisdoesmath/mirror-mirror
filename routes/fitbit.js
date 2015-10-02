@@ -1,33 +1,46 @@
 var express = require('express');
 var router = express.Router();
 var https = require('https');
-var FitbitApiClient = require('fitbit-node');
+var FitbitApiClient = require('fitbit-client-oauth2');
 
-var fitbitData = "";
-var lastRequestTime;
+var clientId = process.env.FITBIT_CONSUMER_KEY;
+var clientSecret = process.env.FITBIT_CONSUMER_SECRET;
 
-var consumerKey = process.env.FITBIT_CONSUMER_KEY,
-	consumerSecret = process.env.FITBIT_CONSUMER_SECRET,
-	userKey = process.env.FITBIT_USER_KEY,
-	userSecret = process.env.FITBIT_USER_SECRET;
+/*
+
+Needs to be updated for Oauth2 to get interesting data
 
 
-var fitbitClient = new FitbitApiClient(consumerKey, consumerSecret)
+*/
 
-/* GET weather data from forecast.io */
-router.get('/', function(req, res, next) {
+// var fitbitData = "";
+// var lastRequestTime;
 
-	var requestTime = Math.floor(new Date() / 1000);
+// var consumerKey = process.env.FITBIT_CONSUMER_KEY,
+// 	consumerSecret = process.env.FITBIT_CONSUMER_SECRET,
+// 	userKey = process.env.FITBIT_USER_KEY,
+// 	userSecret = process.env.FITBIT_USER_SECRET,
+// 	userId = process.env.FITBIT_USER_ID;
 
-	if (lastRequestTime == null || (requestTime - lastRequestTime) > 300) {
-		fitbitData = fitbitClient.get('body/weight', userKey, userSecret);
 
-		res.send(fitbitData);
+// var client = new FitbitApiClient(consumerKey, consumerSecret)
 
-	} else {
-		res.send(fitbitData);
-	}
+// /* GET weather data from forecast.io */
+// router.get('/', function(req, res, next) {
 
-});
+// 	var requestTime = Math.floor(new Date() / 1000);
 
-module.exports = router;
+// 	if (lastRequestTime == null || (requestTime - lastRequestTime) > 300) {
+// 		return client.get('/profile.json', userKey, userSecret).then(function (results) {
+// 			fitbitData = results[0];
+// 			res.send(fitbitData);
+// 		});
+// 	} else {
+// 		res.send(fitbitData);
+// 	}
+
+
+
+// });
+
+// module.exports = router;
